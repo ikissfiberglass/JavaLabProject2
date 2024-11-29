@@ -26,7 +26,7 @@ public class ControllerImpl {
 
         switch(startMenuOption){
             case "1":
-                view.displayMessageNewLine("Lista pracowników");
+                view.displayMessageNewLine("Lista pracowników: \n");
                 if(Pracownik.getPracownikArrayListSize() == 0){
                     view.displayMessageNewLine("Lista pracowników jest pusta");
                 }else{
@@ -35,12 +35,25 @@ public class ControllerImpl {
             case "2":
                 view.displayMessageNewLine("Podaj Pesel pracownika: ");
                 String peselLocal = userInput.nextLine();
-                Pracownik tempPracownik = new Pracownik(peselLocal);
+
+                view.displayMessageNewLine("Podaj imię pracownika: ");
+                String firstName = userInput.nextLine();
+
+                view.displayMessageNewLine("Podaj nazwisko pracownika: ");
+                String secondName = userInput.nextLine();
+
+                Pracownik tempPracownik = new Pracownik(peselLocal, firstName, secondName);
                 Pracownik.addPracownikToList(tempPracownik);
 
             case "3":
+                view.displayMessageNewLine("Podaj Pesel pracownika: ");
+                String deletingOption = userInput.nextLine();
                 view.displayMessageNewLine("Usuwanie pracownika");
-                Pracownik.deletePracownikFromListByPesel()
+                Pracownik.deletePracownikFromListByPesel(deletingOption);
+                //view.displayMessageNewLine(Pracownik.getPracownikArrayList());
+
+            case 4:
+                //KOPIA
 
         }
 

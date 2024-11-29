@@ -13,8 +13,10 @@ public class Pracownik<T> {
 
     public Pracownik() {}
 
-    public Pracownik(String pesel){
+    public Pracownik(String pesel, String firstName, String secondName){
         this.pesel = pesel;
+        this.firstName = firstName;
+        this.secondName = secondName;
         addPracownikToList(this);
     }
 
@@ -46,8 +48,12 @@ public class Pracownik<T> {
             this.pesel = pesel;
         }
 
-        public static ArrayList<Pracownik> getPracownikArrayList(){
-            return pracownikArrayList;
+//        public static ArrayList<Pracownik> getPracownikArrayList(){
+//            return pracownikArrayList;
+//        }
+
+        public static String getPracownikArrayList(){
+             return pracownikArrayList.toString();
         }
 
         public static int getPracownikArrayListSize(){
@@ -66,10 +72,9 @@ public class Pracownik<T> {
             for( Pracownik localPracownik : pracownikArrayList){
                 if(localPracownik.pesel == Pesel){
                     return localPracownik;
-                }else {
-                    return null;
                 }
             }
+            return null;
         }
 
         public static void deletePracownikFromListByPesel(String pesel) throws NullPointerException{
@@ -77,4 +82,5 @@ public class Pracownik<T> {
         }
 
     }
-}
+
+
