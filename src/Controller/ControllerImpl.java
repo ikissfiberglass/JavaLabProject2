@@ -5,56 +5,100 @@ import java.util.Scanner;
 import Model.Pracownik;
 
 public class ControllerImpl {
-    private final ViewImpl view;
+    private final ViewImpl view = new ViewImpl();
     private final Scanner userInput = new Scanner(System.in);
 
-
-    public ControllerImpl(ViewImpl view){
-
-        this.view = view;
-    }
+    public ControllerImpl(){}
 
     public void startMenu(){
-        view.displayMessageNewLine("MENU");
-        view.displayMessageNewLine("1. Lista pracowników");
-        view.displayMessageNewLine("2. Dodaj pracownika");
-        view.displayMessageNewLine("3. Usuń pracownika");
-        view.displayMessageNewLine("4. Kopia zapasowa");
 
-        view.displayMessage("Wybór> ");
-        String startMenuOption = userInput.nextLine();
+        boolean startMenuRunning = true;
+        while(startMenuRunning) {
+            view.displayMessageNewLine("MENU");
+            view.displayMessageNewLine("1. Lista pracowników");
+            view.displayMessageNewLine("2. Dodaj pracownika");
+            view.displayMessageNewLine("3. Usuń pracownika");
+            view.displayMessageNewLine("4. Kopia zapasowa");
+            view.displayMessageNewLine("q - wyjście");
 
-        switch(startMenuOption){
-            case "1":
-                view.displayMessageNewLine("Lista pracowników: \n");
-                if(Pracownik.getPracownikArrayListSize() == 0){
-                    view.displayMessageNewLine("Lista pracowników jest pusta");
-                }else{
-                    view.displayMessageNewLine(Pracownik.getPracownikArrayList());
-                }
-            case "2":
-                view.displayMessageNewLine("Podaj Pesel pracownika: ");
-                String peselLocal = userInput.nextLine();
+            view.displayMessage("Wybór> ");
 
-                view.displayMessageNewLine("Podaj imię pracownika: ");
-                String firstName = userInput.nextLine();
+            String startMenuOption = userInput.nextLine();
+            switch (startMenuOption) {
+                case "1":
+                    boolean listaPracownikowRunning = true;
+                    int index =0;
+                    Pracownik.getPracownikStringRepresentationFromListByIndex(index);
+                    while(listaPracownikowRunning){
+//                        index++;
 
-                view.displayMessageNewLine("Podaj nazwisko pracownika: ");
-                String secondName = userInput.nextLine();
+                        view.displayMessageNewLine(Pracownik.getPracownikStringRepresentationFromListByIndex(index));
 
-                Pracownik tempPracownik = new Pracownik(peselLocal, firstName, secondName);
-                Pracownik.addPracownikToList(tempPracownik);
+                        view.displayMessageNewLine("[Enter] - następny\n [q] - powrót \n [e] - wyjście");
+                        String listaPracownikowOption = userInput.nextLine();
+                        if(listaPracownikowOption.length() == 0){
+                            index++;
+                        }else if(listaPracownikowOption.toLowerCase() == "q"){
+                            index--;
+                            view.displayMessageNewLine(Pracownik.getPracownikStringRepresentationFromListByIndex(index));
+                        }else if(listaPracownikowOption.toLowerCase() == "e"){
+                            listaPracownikowRunning = false;
+                        }
+                        else{
+                            view.displayMessageNewLine("Niewłaściwa opcja");
+                        }
+                    }
 
-            case "3":
-                view.displayMessageNewLine("Podaj Pesel pracownika: ");
-                String deletingOption = userInput.nextLine();
-                view.displayMessageNewLine("Usuwanie pracownika");
-                Pracownik.deletePracownikFromListByPesel(deletingOption);
-                //view.displayMessageNewLine(Pracownik.getPracownikArrayList());
+                    break;
+                case "2":
+                    view.displayMessageNewLine("Podaj Pesel pracownika: ");
+                    String peselLocal = userInput.nextLine();
 
-            case 4:
-                //KOPIA
+                    view.displayMessageNewLine("Podaj imię pracownika: ");
+                    String firstName = userInput.nextLine();
 
+                    view.displayMessageNewLine("Podaj nazwisko pracownika: ");
+                    String secondName = userInput.nextLine();
+
+                    view.displayMessageNewLine("Podaj stanowisko pracownika: ");
+                    String stanowisko = userInput.nextLine();
+
+                    view.displayMessageNewLine("Podaj wynagrodzenie pracownika: ");
+                    float wynagrodzenie = Float.parseFloat(userInput.nextLine());
+
+                    view.displayMessageNewLine("Podaj numer telefonu pracownika: ");
+                    String phoneNumber = userInput.nextLine();
+
+                    view.displayMessageNewLine("Podaj dodatek służbowy pracownika: ");
+                    float dodatekSluzbowy = Float.parseFloat(userInput.nextLine());
+
+                    view.displayMessageNewLine("Podaj kartę służbową pracownika: ");
+                    String kartaSluzbowa = userInput.nextLine();
+
+                    view.displayMessageNewLine("Podaj limit kosztów miesięcznych pracownika: ");
+                    float limitKosztowMiesiac = Float.parseFloat(userInput.nextLine());
+
+                    Pracownik tempPracownik = new Pracownik(peselLocal, firstName, secondName, wynagrodzenie, phoneNumber, dodatekSluzbowy, kartaSluzbowa, limitKosztowMiesiac );
+                    Pracownik.addPracownikToList(tempPracownik);
+
+                    break;
+                case "3":
+                    view.displayMessageNewLine("Podaj Pesel pracownika: ");
+                    String deletingOption = userInput.nextLine();
+                    view.displayMessageNewLine("Usuwanie pracownika");
+                    Pracownik.deletePracownikFromListByPesel(deletingOption);
+                    //view.displayMessageNewLine(Pracownik.getPracownikArrayList());
+                    break;
+                    //case 4:
+                    //KOPIA
+
+                case "q":
+                    startMenuRunning = false;
+                    break;
+
+                default:
+                    view.displayMessageNewLine("Wpisz ponownie");
+            }
         }
 
 
