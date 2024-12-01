@@ -21,7 +21,7 @@ public class ControllerImpl {
             view.displayMessageNewLine("4. Kopia zapasowa");
             view.displayMessageNewLine("q - wyjście");
 
-            view.displayMessage("Wybór> ");
+            view.displayMessage("Wybór> \n");
 
             String startMenuOption = userInput.nextLine();
             switch (startMenuOption) {
@@ -30,25 +30,32 @@ public class ControllerImpl {
                     int index =0;
                     Pracownik.getPracownikStringRepresentationFromListByIndex(index);
                     while(listaPracownikowRunning){
-//                        index++;
-
                         view.displayMessageNewLine(Pracownik.getPracownikStringRepresentationFromListByIndex(index));
+                        view.displayMessageNewLine("Index: " + index);
+
 
                         view.displayMessageNewLine("[Enter] - następny\n [q] - powrót \n [e] - wyjście");
                         String listaPracownikowOption = userInput.nextLine();
                         if(listaPracownikowOption.length() == 0){
-                            index++;
-                        }else if(listaPracownikowOption.toLowerCase() == "q"){
-                            index--;
-                            view.displayMessageNewLine(Pracownik.getPracownikStringRepresentationFromListByIndex(index));
-                        }else if(listaPracownikowOption.toLowerCase() == "e"){
+                            if(index < Pracownik.getPracownikArrayListSize()-1){
+                                index++;
+                            }else{
+                                view.displayMessageNewLine("To ostatni pracownik ");
+                            }
+                        }else if(listaPracownikowOption.equalsIgnoreCase("q")){
+                            if(index > 0){
+                                index--;
+                                //view.displayMessageNewLine(Pracownik.getPracownikStringRepresentationFromListByIndex(index-1));
+                            }else{
+                                view.displayMessageNewLine("Nie można cofnąć się dalej (" );
+                            }
+                        }else if(listaPracownikowOption.equalsIgnoreCase("e")){
                             listaPracownikowRunning = false;
                         }
                         else{
                             view.displayMessageNewLine("Niewłaściwa opcja");
                         }
                     }
-
                     break;
                 case "2":
                     view.displayMessageNewLine("Podaj Pesel pracownika: ");
@@ -59,9 +66,6 @@ public class ControllerImpl {
 
                     view.displayMessageNewLine("Podaj nazwisko pracownika: ");
                     String secondName = userInput.nextLine();
-
-                    view.displayMessageNewLine("Podaj stanowisko pracownika: ");
-                    String stanowisko = userInput.nextLine();
 
                     view.displayMessageNewLine("Podaj wynagrodzenie pracownika: ");
                     float wynagrodzenie = Float.parseFloat(userInput.nextLine());
@@ -81,13 +85,13 @@ public class ControllerImpl {
                     Pracownik tempPracownik = new Pracownik(peselLocal, firstName, secondName, wynagrodzenie, phoneNumber, dodatekSluzbowy, kartaSluzbowa, limitKosztowMiesiac );
                     Pracownik.addPracownikToList(tempPracownik);
 
+
                     break;
                 case "3":
                     view.displayMessageNewLine("Podaj Pesel pracownika: ");
                     String deletingOption = userInput.nextLine();
                     view.displayMessageNewLine("Usuwanie pracownika");
                     Pracownik.deletePracownikFromListByPesel(deletingOption);
-                    //view.displayMessageNewLine(Pracownik.getPracownikArrayList());
                     break;
                     //case 4:
                     //KOPIA

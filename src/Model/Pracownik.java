@@ -7,13 +7,13 @@ public class Pracownik<T> {
     private String pesel;
     private String firstName;
     private String secondName;
-    private String stanowisko;
     private float wynagrodzenie;
     private String phoneNumber;
     private T custom;
     private float dodatekSluzbowy;
     private String kartaSluzbowa;
     private float limitKosztowMiesiac;
+    private Roles stanowisko = Roles.PRACOWNIK;
     private static ArrayList<Pracownik> pracownikArrayList = new ArrayList<>();
 
 
@@ -28,9 +28,6 @@ public class Pracownik<T> {
         this.dodatekSluzbowy = dodatekSluzbowy;
         this.kartaSluzbowa = kartaSluzbowa;
         this.limitKosztowMiesiac = limitKosztowMiesiac;
-
-        this.stanowisko = "pracownik";
-        addPracownikToList(this);
     }
 
     public void setFirstName(String firstName) {
@@ -112,15 +109,15 @@ public class Pracownik<T> {
         @Override
         public String toString(){
             return String.format(
-                    "%-25s %s\n" +
-                            "%-25s %s\n" +
-                            "%-25s %s\n" +
-                            "%-25s %s\n" +
-                            "%-25s %.2f\n" +
-                            "%-25s %s\n" +
-                            "%-25s %.2f\n" +
-                            "%-25s %s\n" +
-                            "%-25s %.2f",
+                    "%-30s %s\n" +
+                            "%-30s %s\n" +
+                            "%-30s %s\n" +
+                            "%-30s %s\n" +
+                            "%-30s %.2f\n" +
+                            "%-30s %s\n" +
+                            "%-30s %.2f\n" +
+                            "%-30s %s\n" +
+                            "%-30s %.2f",
                     "Identyfikator PESEL:", pesel,
                     "Imię:", firstName,
                     "Nazwisko:", secondName,
