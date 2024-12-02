@@ -9,5 +9,4 @@ public class ViewImpl {
 
     public void displayError(String errorMessage){System.err.println(errorMessage);}
 
-
 }

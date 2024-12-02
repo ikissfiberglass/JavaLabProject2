@@ -1,33 +1,31 @@
 package Model;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Pracownik<T> {
+    private static Set<String> uniquePesels = new HashSet<>();
 
-    private String pesel;
-    private String firstName;
-    private String secondName;
-    private float wynagrodzenie;
-    private String phoneNumber;
-    private T custom;
-    private float dodatekSluzbowy;
-    private String kartaSluzbowa;
-    private float limitKosztowMiesiac;
-    private Roles stanowisko = Roles.PRACOWNIK;
-    private static ArrayList<Pracownik> pracownikArrayList = new ArrayList<>();
-
+    protected String pesel;
+    protected String firstName;
+    protected String secondName;
+    protected float wynagrodzenie;
+    protected String phoneNumber;
+    protected T custom;
+    protected Roles stanowisko = Roles.PRACOWNIK;
 
     public Pracownik() {}
 
-    public Pracownik(String pesel, String firstName, String secondName, float wynagrodzenie, String phoneNumber, float dodatekSluzbowy, String kartaSluzbowa, float limitKosztowMiesiac){
+    public Pracownik(String pesel, String firstName, String secondName, float wynagrodzenie, String phoneNumber){
+        if(!uniquePesels.add(pesel)){
+            throw new IllegalArgumentException("PESEL [" + pesel + "] musi być wyjątkowy");
+        }
         this.pesel = pesel;
         this.firstName = firstName;
         this.secondName = secondName;
         this.wynagrodzenie = wynagrodzenie;
         this.phoneNumber = phoneNumber;
-        this.dodatekSluzbowy = dodatekSluzbowy;
-        this.kartaSluzbowa = kartaSluzbowa;
-        this.limitKosztowMiesiac = limitKosztowMiesiac;
     }
 
     public void setFirstName(String firstName) {
@@ -54,81 +52,11 @@ public class Pracownik<T> {
         return secondName;
     }
 
-        public void setPesel(String pesel){
+    public void setPesel(String pesel){
             this.pesel = pesel;
         }
 
-//        public static ArrayList<Pracownik> getPracownikArrayList(){
-//            return pracownikArrayList;
-//        }
 
-        public static String getPracownikArrayListStringRepresentation(){
-             return pracownikArrayList.toString();
-        }
-
-        public static ArrayList<Pracownik> getPracownikArrayList() {return pracownikArrayList;}
-
-        public static int getPracownikArrayListSize(){
-            return pracownikArrayList.size();
-        }
-
-        public static void addPracownikToList(Pracownik pracownik){
-            pracownikArrayList.add(pracownik);
-        }
-
-        public static void deletePracownikFromList(Pracownik pracownik){
-            pracownikArrayList.remove(pracownik);
-        }
-
-        public static Pracownik findPracownikByPesel(String Pesel) throws NullPointerException{
-            for( Pracownik localPracownik : pracownikArrayList){
-                if(localPracownik.pesel == Pesel){
-                    return localPracownik;
-                }
-            }
-            return null;
-        }
-
-        public static String deletePracownikFromListByPesel(String pesel) throws NullPointerException{
-            pracownikArrayList.remove(findPracownikByPesel(pesel));
-            if(pracownikArrayList.contains(findPracownikByPesel(pesel))){
-                return "Nie udało się usunąć pracownika ( ";
-            }else{
-                return " Pracownik z numerem PESEL: [" + pesel +  "] został usunięty";
-            }
-        }
-
-        public static Pracownik getPracownikFromListByIndex(int index){ //indexation starts with 0
-            return pracownikArrayList.get(index);
-        }
-
-        public static String getPracownikStringRepresentationFromListByIndex( int index){
-            return pracownikArrayList.get(index).toString();
-        }
-
-        @Override
-        public String toString(){
-            return String.format(
-                    "%-30s %s\n" +
-                            "%-30s %s\n" +
-                            "%-30s %s\n" +
-                            "%-30s %s\n" +
-                            "%-30s %.2f\n" +
-                            "%-30s %s\n" +
-                            "%-30s %.2f\n" +
-                            "%-30s %s\n" +
-                            "%-30s %.2f",
-                    "Identyfikator PESEL:", pesel,
-                    "Imię:", firstName,
-                    "Nazwisko:", secondName,
-                    "Stanowisko:", stanowisko,
-                    "Wynagrodzenie:", wynagrodzenie,
-                    "Numer telefonu:", phoneNumber,
-                    "Dodatek służbowy:", dodatekSluzbowy,
-                    "Karta służbowa:", kartaSluzbowa,
-                    "Limit kosztów miesięcznych:", limitKosztowMiesiac
-            );
-        }
 
     }
 
