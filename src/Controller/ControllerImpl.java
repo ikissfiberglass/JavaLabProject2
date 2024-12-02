@@ -100,8 +100,13 @@ public class ControllerImpl {
                         break;
                     }
                     break;
-                //case 4:
+                case "4":
                 //KOPIA
+                    pracownicy.serialize();
+
+                    view.displayMessageNewLine(pracownicy.deserialize().toString());
+
+
 
                 case "q":
                     startMenuRunning = false;
