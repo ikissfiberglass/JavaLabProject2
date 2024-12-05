@@ -82,6 +82,8 @@ public class PracownikRepository implements Serializable {
         }
     }
 
+
+    //huinia ne pracuje
 //    public void archiveToZip(String inputFileName, String zipFileName) {
 //        try (ZipOutputStream zipOut = new ZipOutputStream(new FileOutputStream(zipFileName));
 //             FileInputStream fileIn = new FileInputStream(inputFileName)) {
