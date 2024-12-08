@@ -1,10 +1,11 @@
 package Model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Pracownik<T> {
+public abstract class  Pracownik<T> implements Serializable {
     private static Set<String> uniquePesels = new HashSet<>();
 
     protected String pesel;

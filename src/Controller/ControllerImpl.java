@@ -101,13 +101,28 @@ public class ControllerImpl {
                     }
                     break;
                 case "4":
-                //KOPIA
-                    pracownicy.serialize();
+                    view.displayMessageNewLine("[Z]achowaj/[O]dtwórz :" );
+                    String serOption = userInput.nextLine();
 
-                    view.displayMessageNewLine(pracownicy.deserialize().toString());
-
-
-
+                    if (serOption.equalsIgnoreCase("z") ){
+                        view.displayMessageNewLine("Kompresja [G]zip/[Z]ip : ");
+                        String archOption  = userInput.nextLine();
+                        if(archOption.equalsIgnoreCase("Z")){
+                            view.displayMessageNewLine("Nazwa pliku: ");
+                            String fileName = userInput.nextLine();
+                            pracownicy.serializeToZip(fileName);
+                        }else if(archOption.equalsIgnoreCase("g")){
+                            view.displayMessageNewLine("Nazwa pliku: ");
+                            String fileName = userInput.nextLine();
+                            pracownicy.serializeToGzip(fileName);
+                        }else{
+                            view.displayMessageNewLine("niema takiej opcji\n");
+                        }
+                    }else if( serOption.equalsIgnoreCase("O"))
+                        view.displayMessageNewLine("Nazwa pliku: ");
+                        String fileName = userInput.nextLine();
+                        pracownicy.deserialize(fileName);
+                    break;
                 case "q":
                     startMenuRunning = false;
                     break;

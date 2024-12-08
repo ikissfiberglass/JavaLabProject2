@@ -1,6 +1,8 @@
 package View;
 
-public class ViewImpl {
+import java.io.Serializable;
+
+public class ViewImpl implements Serializable {
     public ViewImpl() {    }
 
     public void displayMessageNewLine(String message){System.out.println(message);}
