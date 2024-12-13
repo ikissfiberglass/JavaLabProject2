@@ -6,6 +6,7 @@ import Model.PracownikRepository;
 import View.ViewImpl;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Scanner;
 import Model.Pracownik;
 
@@ -33,37 +34,15 @@ public class ControllerImpl {
             String startMenuOption = userInput.nextLine();
             switch (startMenuOption) {
                 case "1":
-                    boolean listaPracownikowRunning = true;
-                    int index = 0;
-                    try {
-                        pracownicy.getPracownikStringRepresentationByIndex(index);
-                    }catch (IndexOutOfBoundsException e){
-                        view.displayMessageNewLine("Spróbuj ponownie");
-                        break;
-                    }
-                    while (listaPracownikowRunning) {
-                        view.displayMessageNewLine(pracownicy.getPracownikStringRepresentationByIndex(index));
-                        view.displayMessageNewLine("Index: " + index);
+                    view.displayMessageNewLine("Lista pracowników: ");
+                    List<Pracownik> allWorkers = pracownicy.getAllPracownicy();
 
-                        view.displayMessageNewLine("[Enter] - następny\n [q] - powrót \n [e] - wyjście");
-                        String listaPracownikowOption = userInput.nextLine();
-                        if (listaPracownikowOption.length() == 0) {
-                            if (index < pracownicy.getPracownicySize() - 1) {
-                                index++;
-                            } else {
-                                view.displayMessageNewLine("To ostatni pracownik ");
-                            }
-                        } else if (listaPracownikowOption.equalsIgnoreCase("q")) {
-                            if (index > 0) {
-                                index--;
-                                //view.displayMessageNewLine(Pracownik.getPracownikStringRepresentationFromListByIndex(index-1));
-                            } else {
-                                view.displayMessageNewLine("Nie można cofnąć się dalej (");
-                            }
-                        } else if (listaPracownikowOption.equalsIgnoreCase("e")) {
-                            listaPracownikowRunning = false;
-                        } else {
-                            view.displayMessageNewLine("Niewłaściwa opcja");
+                    if (allWorkers.isEmpty()) {
+                        view.displayMessageNewLine("Brak pracowników \n");
+                    } else {
+                        for (Pracownik pracownik : allWorkers) {
+                            view.displayMessageNewLine(pracownik.toString() + "\n");
+
                         }
                     }
                     break;
@@ -101,28 +80,45 @@ public class ControllerImpl {
                     }
                     break;
                 case "4":
-                    view.displayMessageNewLine("[Z]achowaj/[O]dtwórz :" );
+                    view.displayMessageNewLine("[Z]achowaj/[O]dtwórz :");
                     String serOption = userInput.nextLine();
 
-                    if (serOption.equalsIgnoreCase("z") ){
+                    if (serOption.equalsIgnoreCase("z")) {
                         view.displayMessageNewLine("Kompresja [G]zip/[Z]ip : ");
-                        String archOption  = userInput.nextLine();
-                        if(archOption.equalsIgnoreCase("Z")){
+                        String archOption = userInput.nextLine();
+
+                        if (archOption.equalsIgnoreCase("Z")) {
                             view.displayMessageNewLine("Nazwa pliku: ");
                             String fileName = userInput.nextLine();
                             pracownicy.serializeToZip(fileName);
-                        }else if(archOption.equalsIgnoreCase("g")){
+                            view.displayMessageNewLine("Dane zostały zapisane do pliku ZIP: " + fileName + ".zip");
+                        } else if (archOption.equalsIgnoreCase("g")) {
                             view.displayMessageNewLine("Nazwa pliku: ");
                             String fileName = userInput.nextLine();
                             pracownicy.serializeToGzip(fileName);
-                        }else{
-                            view.displayMessageNewLine("niema takiej opcji\n");
+                            view.displayMessageNewLine("Dane zostały zapisane do pliku GZIP: " + fileName + ".gz");
+                        } else {
+                            view.displayMessageNewLine("Nie ma takiej opcji\n");
                         }
-                    }else if( serOption.equalsIgnoreCase("O"))
-                        view.displayMessageNewLine("Nazwa pliku: ");
+                    } else if (serOption.equalsIgnoreCase("o")) {
+                        view.displayMessageNewLine("Nazwa pliku (bez rozszerzenia): ");
                         String fileName = userInput.nextLine();
-                        pracownicy.deserialize(fileName);
+
+                        if (!fileName.endsWith(".zip") && !fileName.endsWith(".gz")) {
+                            view.displayMessageNewLine("Podaj format pliku: [G]zip/[Z]ip:");
+                            String formatOption = userInput.nextLine();
+                            if (formatOption.equalsIgnoreCase("G")) {
+                                fileName += ".gz";
+                            } else if (formatOption.equalsIgnoreCase("Z")) {
+                                fileName += ".zip";
+                            } else {
+                                view.displayMessageNewLine("Nieobsługiwany format pliku.\n");
+                                return;
+                            }
+                        }
+                    }
                     break;
+
                 case "q":
                     startMenuRunning = false;
                     break;

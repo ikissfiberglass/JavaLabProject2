@@ -65,63 +65,167 @@ public class PracownikRepository implements Serializable {
     }
 
 
+
+    private void serializeToSer(String fileName) throws IOException {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(fileName))) {
+            oos.writeObject(pracownicy);
+        }
+    }
+
+
     public void serializeToZip(String fileName) {
         if (!fileName.endsWith(".zip")) {
             fileName += ".zip";
         }
 
-        try (ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(new File("megafolder", fileName)));
-             ObjectOutputStream oos = new ObjectOutputStream(zos)) {
-            zos.putNextEntry(new ZipEntry("pracownicy"));
-            oos.writeObject(pracownicy);
-            zos.closeEntry();
+        File folder = new File("megafolder");
+        if (!folder.exists()) {
+            folder.mkdirs();
+        }
+
+        String serFileName = "megafolder" + File.separator + "pracownicy.ser";
+        try {
+            serializeToSer(serFileName);
+
+            try (ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(new File(folder, fileName)));
+                 FileInputStream fis = new FileInputStream(serFileName)) {
+                zos.putNextEntry(new ZipEntry("pracownicy.ser"));
+
+                byte[] buffer = new byte[1024];
+                int length;
+                while ((length = fis.read(buffer)) > 0) {
+                    zos.write(buffer, 0, length);
+                }
+                zos.closeEntry();
+            }
         } catch (IOException ioe) {
             ioe.printStackTrace();
-            System.out.println(ioe.getMessage());
+            System.out.println("Error during ZIP compression: " + ioe.getMessage());
+        } finally {
+            new File(serFileName).delete();
         }
     }
 
     public void serializeToGzip(String fileName) {
-        try (ObjectOutputStream objectStream = new ObjectOutputStream(new GZIPOutputStream(new FileOutputStream("megafolder" + File.separator + fileName)))) {
-            objectStream.writeObject(pracownicy);
-        } catch (IOException e) {
-            view.displayMessageNewLine("Błąd serializacji do GZIP: " + e.getMessage());
+        if (!fileName.endsWith(".gz")) {
+            fileName += ".gz";
+        }
+
+        File folder = new File("megafolder");
+        if (!folder.exists()) {
+            folder.mkdirs();
+        }
+
+        String serFileName = "megafolder" + File.separator + "pracownicy.ser";
+        try {
+            serializeToSer(serFileName);
+
+            try (GZIPOutputStream gzos = new GZIPOutputStream(new FileOutputStream(new File(folder, fileName)));
+                 FileInputStream fis = new FileInputStream(serFileName)) {
+
+                byte[] buffer = new byte[1024];
+                int length;
+                while ((length = fis.read(buffer)) > 0) {
+                    gzos.write(buffer, 0, length);
+                }
+            }
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+            System.out.println("Error during GZIP compression: " + ioe.getMessage());
+        } finally {
+            new File(serFileName).delete();
         }
     }
 
 
-    private List<Pracownik> deserializeFromZip(String fileName) {
-        try (ZipInputStream zis = new ZipInputStream(new FileInputStream("megafolder" + File.separator + fileName));
-             ObjectInputStream ois = new ObjectInputStream(zis)) {
-             zis.getNextEntry();
-            return (List<Pracownik>) ois.readObject();
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
-            return null;
+    public List<Pracownik> deserializeFromZip(String fileName) {
+        File file = new File("megafolder" + File.separator + fileName);
+        if (!file.exists()) {
+            System.err.println("File not found: " + file.getPath());
+            return new ArrayList<>();
         }
+
+        String serFileName = "megafolder" + File.separator + "pracownicy.ser";
+        try (ZipInputStream zis = new ZipInputStream(new FileInputStream(file));
+             FileOutputStream fos = new FileOutputStream(serFileName)) {
+
+            ZipEntry entry = zis.getNextEntry();
+            if (entry == null || !entry.getName().equals("pracownicy.ser")) {
+                throw new IOException("Invalid or missing entry in ZIP file: " + entry);
+            }
+
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = zis.read(buffer)) > 0) {
+                fos.write(buffer, 0, length);
+            }
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+            System.err.println("Error during ZIP decompression: " + ioe.getMessage());
+            return new ArrayList<>();
+        }
+
+        return deserializeFromSer(serFileName);
     }
 
     public List<Pracownik> deserializeFromGzip(String fileName) {
-        try (ObjectInputStream objectStream = new ObjectInputStream(new GZIPInputStream(new FileInputStream("megafolder" + File.separator + fileName)))) {
-            return (List<Pracownik>) objectStream.readObject();
+        File file = new File("megafolder" + File.separator + fileName);
+        if (!file.exists()) {
+            System.err.println("File not found: " + file.getPath());
+            return new ArrayList<>();
+        }
+
+        String serFileName = "megafolder" + File.separator + "pracownicy.ser";
+        try (GZIPInputStream gzis = new GZIPInputStream(new FileInputStream(file));
+             FileOutputStream fos = new FileOutputStream(serFileName)) {
+
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = gzis.read(buffer)) > 0) {
+                fos.write(buffer, 0, length);
+            }
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+            System.err.println("Error during GZIP decompression: " + ioe.getMessage());
+            return new ArrayList<>();
+        }
+
+        return deserializeFromSer(serFileName);
+    }
+
+    private List<Pracownik> deserializeFromSer(String fileName) {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(fileName))) {
+            return (List<Pracownik>) ois.readObject();
         } catch (IOException | ClassNotFoundException e) {
-            view.displayMessageNewLine("Błąd deserializacji z GZIP: " + e.getMessage());
-            return null;
+            e.printStackTrace();
+            System.err.println("Error during deserialization: " + e.getMessage());
+            return new ArrayList<>();
+        } finally {
+            new File(fileName).delete();
         }
     }
 
-    public List<Pracownik> deserialize(String fileName){
+    public List<Pracownik> deserialize(String fileName) {
+        List<Pracownik> deserializedList = null;
+
         if (fileName.endsWith(".gz")) {
-            return deserializeFromGzip(fileName);
+            deserializedList = deserializeFromGzip(fileName);
         } else if (fileName.endsWith(".zip")) {
-            return deserializeFromZip(fileName);
+            deserializedList = deserializeFromZip(fileName);
         } else {
             view.displayMessageNewLine("Nieobsługiwany format pliku: " + fileName);
-            return null;
+            return pracownicy;
         }
+
+        if (deserializedList != null && !deserializedList.isEmpty()) {
+            pracownicy.addAll(deserializedList);
+            view.displayMessageNewLine("Deserialization complete. Workers added: " + deserializedList.size());
+        } else {
+            view.displayMessageNewLine("No data found in the file or deserialization failed.");
+        }
+
+        return pracownicy;
     }
-
-
 
 }
 
