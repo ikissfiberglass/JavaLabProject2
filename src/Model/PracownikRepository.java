@@ -155,7 +155,7 @@ public class PracownikRepository implements Serializable {
 
     private ArrayList<Pracownik> deserializeFromSer(String fileName) {
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(fileName))) {
-            view.displayMessageNewLine("deserialisation completed");
+//            view.displayMessageNewLine("deserialisation completed");
             return (ArrayList<Pracownik>) ois.readObject();
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
@@ -238,7 +238,7 @@ public class PracownikRepository implements Serializable {
 
         if (deserializedList != null && !deserializedList.isEmpty()) {
             pracownicy.addAll(deserializedList);
-            view.displayMessageNewLine("Deserialization complete. Workers added: " + deserializedList.size());
+//            view.displayMessageNewLine("Deserialization complete. Workers added: " + deserializedList.size());
         } else {
             view.displayMessageNewLine("No data found in the file or deserialization failed.");
         }

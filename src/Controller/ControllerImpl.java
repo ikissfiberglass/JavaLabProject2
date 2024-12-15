@@ -5,6 +5,7 @@ import Model.Handlowiec;
 import Model.PracownikRepository;
 import View.ViewImpl;
 
+import java.io.File;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,7 +51,7 @@ public class ControllerImpl {
                 case "2":
                     boolean roleMenuRunning = true;
                     while (roleMenuRunning) {
-                        view.displayMessageNewLine( "[D]yrektor/[H]andlowiec:       ");
+                        view.displayMessageNewLine("[D]yrektor/[H]andlowiec:       ");
                         String roleOption = userInput.nextLine();
                         view.displayMessageNewLine("------------------------------------------------------------------");
                         if (roleOption.equalsIgnoreCase("d")) {
@@ -114,40 +115,20 @@ public class ControllerImpl {
                             view.displayMessageNewLine("Nie ma takiej opcji\n");
                         }
                     } else if (serOption.equalsIgnoreCase("o")) {
-                        view.displayMessageNewLine("Nazwa pliku (bez rozszerzenia): ");
+                        view.displayMessageNewLine("Nazwa pliku (z rozszerzeniem): ");
                         String fileName = userInput.nextLine();
                         ArrayList<Pracownik> tempArrayList;
-                        if(fileName + ".zip" != null){
-                            tempArrayList=  pracownicy.deserializeFromZip(fileName + ".zip");
-                        }else if(fileName + ".gz" !=null){
-                            tempArrayList = pracownicy.deserializeFromGzip(fileName+".gz");
+
+
+                        if(fileName.endsWith(".zip") || fileName.endsWith(".gz")){
+                            pracownicy.deserialize(fileName);
+                            view.displayMessageNewLine("Sukces ");
                         }else{
-                            view.displayMessageNewLine("Niema takiego pliku( ");
-                            tempArrayList = null;
+                            view.displayMessageNewLine("Nieobsługiwany format pliku: " + fileName);
                         }
-                        pracownicy.concatenate(tempArrayList);
-
-
                     }
                     break;
 
-                    /*} else if (serOption.equalsIgnoreCase("o")) {
-                        view.displayMessageNewLine("Nazwa pliku (bez rozszerzenia): ");
-                        String fileName = userInput.nextLine();
-
-                        if (!fileName.endsWith(".zip") && !fileName.endsWith(".gz")) {
-                            view.displayMessageNewLine("Podaj format pliku: [G]zip/[Z]ip:");
-                            String formatOption = userInput.nextLine();
-                            if (formatOption.equalsIgnoreCase("G")) {
-                                fileName += ".gz";
-                            } else if (formatOption.equalsIgnoreCase("Z")) {
-                                fileName += ".zip";
-                            } else {
-                                view.displayMessageNewLine("Nieobsługiwany format pliku.\n");
-                                return;
-                            }
-                        }
-                    }*/
 
                 case "q":
                     startMenuRunning = false;
@@ -157,108 +138,108 @@ public class ControllerImpl {
                     view.displayMessageNewLine("Wpisz ponownie");
             }
         }
-
-
     }
 
-    public void initializeDyrektor() {
-        view.displayMessageNewLine("Podaj Pesel dyrektora: ");
-        String peselLocal = userInput.nextLine();
 
-        view.displayMessageNewLine("Podaj imię dyrektora: ");
-        String firstName = userInput.nextLine();
+        public void initializeDyrektor () {
+            view.displayMessageNewLine("Podaj Pesel dyrektora: ");
+            String peselLocal = userInput.nextLine();
 
-        view.displayMessageNewLine("Podaj nazwisko dyrektora: ");
-        String secondName = userInput.nextLine();
+            view.displayMessageNewLine("Podaj imię dyrektora: ");
+            String firstName = userInput.nextLine();
 
-        float wynagrodzenie = readFloat("Podaj wynagrodzenie dyrektora: ");
-        view.displayMessageNewLine("Podaj numer telefonu dyrektora: ");
-        String phoneNumber = userInput.nextLine();
+            view.displayMessageNewLine("Podaj nazwisko dyrektora: ");
+            String secondName = userInput.nextLine();
 
-        BigDecimal dodatekSluzbowy = readBigDecimal("Podaj dodatek służbowy dyrektora: ");
-        view.displayMessageNewLine("Podaj numer karty: ");
-        String kartaSluzbowa = userInput.nextLine();
+            float wynagrodzenie = readFloat("Podaj wynagrodzenie dyrektora: ");
+            view.displayMessageNewLine("Podaj numer telefonu dyrektora: ");
+            String phoneNumber = userInput.nextLine();
 
-        float limitKosztow = readFloat("Podaj limit kosztów dyrektora: ");
+            BigDecimal dodatekSluzbowy = readBigDecimal("Podaj dodatek służbowy dyrektora: ");
+            view.displayMessageNewLine("Podaj numer karty: ");
+            String kartaSluzbowa = userInput.nextLine();
 
-        view.displayMessageNewLine("[Enter] - zapisz");
-        String validate = userInput.nextLine();
-        if (validate.trim().isEmpty()) {
-            try {
-                Dyrektor dyrektorLocal = new Dyrektor(peselLocal,
-                        firstName,
-                        secondName,
-                        wynagrodzenie,
-                        phoneNumber,
-                        dodatekSluzbowy,
-                        kartaSluzbowa,
-                        limitKosztow);
-                pracownicy.addPracownik(dyrektorLocal);
-            }catch (IllegalArgumentException e){
-                view.displayError(e.getMessage());
+            float limitKosztow = readFloat("Podaj limit kosztów dyrektora: ");
+
+            view.displayMessageNewLine("[Enter] - zapisz");
+            String validate = userInput.nextLine();
+            if (validate.trim().isEmpty()) {
+                try {
+                    Dyrektor dyrektorLocal = new Dyrektor(peselLocal,
+                            firstName,
+                            secondName,
+                            wynagrodzenie,
+                            phoneNumber,
+                            dodatekSluzbowy,
+                            kartaSluzbowa,
+                            limitKosztow);
+                    pracownicy.addPracownik(dyrektorLocal);
+                } catch (IllegalArgumentException e) {
+                    view.displayError(e.getMessage());
+                }
             }
         }
-    }
 
-    public void intializeHandlowiec() {
-        view.displayMessageNewLine("Podaj Pesel handlowca: ");
-        String peselLocal = userInput.nextLine();
+        public void intializeHandlowiec () {
+            view.displayMessageNewLine("Podaj Pesel handlowca: ");
+            String peselLocal = userInput.nextLine();
 
-        view.displayMessageNewLine("Podaj imię handlowca: ");
-        String firstName = userInput.nextLine();
+            view.displayMessageNewLine("Podaj imię handlowca: ");
+            String firstName = userInput.nextLine();
 
-        view.displayMessageNewLine("Podaj nazwisko handlowca: ");
-        String secondName = userInput.nextLine();
+            view.displayMessageNewLine("Podaj nazwisko handlowca: ");
+            String secondName = userInput.nextLine();
 
-        float wynagrodzenie = readFloat("Podaj wynagrodzenie handlowca: ");
-        view.displayMessageNewLine("Podaj numer telefonu handlowca: ");
-        String phoneNumber = userInput.nextLine();
+            float wynagrodzenie = readFloat("Podaj wynagrodzenie handlowca: ");
+            view.displayMessageNewLine("Podaj numer telefonu handlowca: ");
+            String phoneNumber = userInput.nextLine();
 
-        BigDecimal stawkaProwizji = readBigDecimal("Podaj stawkę prowizji handlowca: ");
-        BigDecimal limitProwizjiMiesiac = readBigDecimal("Podaj limit prowizji miesięczny: ");
+            BigDecimal stawkaProwizji = readBigDecimal("Podaj stawkę prowizji handlowca: ");
+            BigDecimal limitProwizjiMiesiac = readBigDecimal("Podaj limit prowizji miesięczny: ");
 
-        view.displayMessageNewLine("[Enter] - zapisz");
-        String validate = userInput.nextLine();
-        if (validate.trim().isEmpty()) {
-            try{
-            Handlowiec handlowiecLocal = new Handlowiec(peselLocal,
-                    firstName,
-                    secondName,
-                    wynagrodzenie,
-                    phoneNumber,
-                    stawkaProwizji,
-                    limitProwizjiMiesiac);
-            pracownicy.addPracownik(handlowiecLocal);
-            }catch (IllegalArgumentException e){
-                view.displayError(e.getMessage());
-            }
+            view.displayMessageNewLine("[Enter] - zapisz");
+            String validate = userInput.nextLine();
+            if (validate.trim().isEmpty()) {
+                try {
+                    Handlowiec handlowiecLocal = new Handlowiec(peselLocal,
+                            firstName,
+                            secondName,
+                            wynagrodzenie,
+                            phoneNumber,
+                            stawkaProwizji,
+                            limitProwizjiMiesiac);
+                    pracownicy.addPracownik(handlowiecLocal);
+                } catch (IllegalArgumentException e) {
+                    view.displayError(e.getMessage());
+                }
 
-        }
-    }
-
-
-    private float readFloat(String prompt) {
-        while (true) {
-            try {
-                view.displayMessageNewLine(prompt);
-                return Float.parseFloat(userInput.nextLine());
-            } catch (NumberFormatException nfe) {
-                view.displayMessageNewLine("Nieprawidłowy format. Wprowadź liczbę zmiennoprzecinkową.");
             }
         }
-    }
 
-    private BigDecimal readBigDecimal(String prompt) {
-        while (true) {
-            try {
-                view.displayMessageNewLine(prompt);
-                return new BigDecimal(userInput.nextLine());
-            } catch (NumberFormatException nfe) {
-                view.displayMessageNewLine("Nieprawidłowy format. Wprowadź poprawną liczbę.");
+
+        private float readFloat (String prompt){
+            while (true) {
+                try {
+                    view.displayMessageNewLine(prompt);
+                    return Float.parseFloat(userInput.nextLine());
+                } catch (NumberFormatException nfe) {
+                    view.displayMessageNewLine("Nieprawidłowy format. Wprowadź liczbę zmiennoprzecinkową.");
+                }
             }
         }
+
+        private BigDecimal readBigDecimal (String prompt){
+            while (true) {
+                try {
+                    view.displayMessageNewLine(prompt);
+                    return new BigDecimal(userInput.nextLine());
+                } catch (NumberFormatException nfe) {
+                    view.displayMessageNewLine("Nieprawidłowy format. Wprowadź poprawną liczbę.");
+                }
+            }
+        }
+
+
     }
 
-
-}
 
