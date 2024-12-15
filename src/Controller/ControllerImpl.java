@@ -6,6 +6,7 @@ import Model.PracownikRepository;
 import View.ViewImpl;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import Model.Pracownik;
@@ -69,16 +70,28 @@ public class ControllerImpl {
                 case "3":
                     view.displayMessageNewLine("Podaj Pesel pracownika: ");
                     String deletingOption = userInput.nextLine();
-                    view.displayMessageNewLine(pracownicy.findPracownikByPesel(deletingOption).toString());
 
-                    view.displayMessageNewLine("[Enter] - potwierdź \n [Q] - porzuć");
-                    String validate = userInput.nextLine();
-                    if(validate.trim().isEmpty()){
-                        pracownicy.removePracownikByPesel(deletingOption);
-                    }else if(validate.equalsIgnoreCase("q")){
-                        break;
+                    try {
+                        if (pracownicy.findPracownikByPesel(deletingOption) != null) {
+                            Pracownik foundPracownik = pracownicy.findPracownikByPesel(deletingOption);
+                            view.displayMessageNewLine("Znaleziono: " + foundPracownik);
+
+                            view.displayMessageNewLine("[Enter] - potwierdź \n[Q] - porzuć");
+                            String validate = userInput.nextLine();
+                            if (validate.trim().isEmpty()) {
+                                String result = pracownicy.removePracownikByPesel(deletingOption);
+                                view.displayMessageNewLine(result);
+                            } else if (validate.equalsIgnoreCase("q")) {
+                                view.displayMessageNewLine("Usuwanie anulowane");
+                            }
+                        } else {
+                            view.displayMessageNewLine("Nie znaleziono pracownika o podanym numerze PESEL");
+                        }
+                    } catch (NumberFormatException e) {
+                        view.displayError("Nieprawidłowy format numeru PESEL: " + e.getMessage());
                     }
                     break;
+
                 case "4":
                     view.displayMessageNewLine("[Z]achowaj/[O]dtwórz :");
                     String serOption = userInput.nextLine();
@@ -103,6 +116,24 @@ public class ControllerImpl {
                     } else if (serOption.equalsIgnoreCase("o")) {
                         view.displayMessageNewLine("Nazwa pliku (bez rozszerzenia): ");
                         String fileName = userInput.nextLine();
+                        ArrayList<Pracownik> tempArrayList;
+                        if(fileName + ".zip" != null){
+                            tempArrayList=  pracownicy.deserializeFromZip(fileName + ".zip");
+                        }else if(fileName + ".gz" !=null){
+                            tempArrayList = pracownicy.deserializeFromGzip(fileName+".gz");
+                        }else{
+                            view.displayMessageNewLine("Niema takiego pliku( ");
+                            tempArrayList = null;
+                        }
+                        pracownicy.concatenate(tempArrayList);
+
+
+                    }
+                    break;
+
+                    /*} else if (serOption.equalsIgnoreCase("o")) {
+                        view.displayMessageNewLine("Nazwa pliku (bez rozszerzenia): ");
+                        String fileName = userInput.nextLine();
 
                         if (!fileName.endsWith(".zip") && !fileName.endsWith(".gz")) {
                             view.displayMessageNewLine("Podaj format pliku: [G]zip/[Z]ip:");
@@ -116,8 +147,7 @@ public class ControllerImpl {
                                 return;
                             }
                         }
-                    }
-                    break;
+                    }*/
 
                 case "q":
                     startMenuRunning = false;

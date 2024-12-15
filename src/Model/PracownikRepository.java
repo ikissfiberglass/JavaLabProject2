@@ -53,17 +53,32 @@ public class PracownikRepository implements Serializable {
         return "Nie udało się usunąć pracownika (brak w liście lub błąd)";
     }
 
-    public Pracownik getPracownikByIndex(int index) {
+    public Pracownik getPracownikByIndex(int index) throws IndexOutOfBoundsException{
         if (index >= 0 && index < pracownicy.size()) {
-            return pracownicy.get(index);
+            try {
+                return pracownicy.get(index);
+            }catch (IndexOutOfBoundsException e){
+                view.displayError("Niema takiego pracownika (z poziomu PracownikRepsoitory)");
+            }
         }
-        throw new IndexOutOfBoundsException("Indeks poza zakresem listy.");
+        return null;
     }
 
     public String getPracownikStringRepresentationByIndex(int index) {
         return pracownicy.get(index).toString();
     }
 
+    public boolean containsPesel(String index){
+        if(getPracownikByIndex(Integer.parseInt(index)) != null){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    public void concatenate(ArrayList<Pracownik> localList){
+            pracownicy.addAll(localList);
+    }
 
 
     private void serializeToSer(String fileName) throws IOException {
@@ -138,7 +153,21 @@ public class PracownikRepository implements Serializable {
     }
 
 
-    public List<Pracownik> deserializeFromZip(String fileName) {
+    private ArrayList<Pracownik> deserializeFromSer(String fileName) {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(fileName))) {
+            view.displayMessageNewLine("deserialisation completed");
+            return (ArrayList<Pracownik>) ois.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+            System.err.println("Error during deserialization: " + e.getMessage());
+            return new ArrayList<>();
+        } finally {
+            new File(fileName).delete();
+        }
+    }
+
+
+    public ArrayList<Pracownik> deserializeFromZip(String fileName) {
         File file = new File("megafolder" + File.separator + fileName);
         if (!file.exists()) {
             System.err.println("File not found: " + file.getPath());
@@ -168,7 +197,7 @@ public class PracownikRepository implements Serializable {
         return deserializeFromSer(serFileName);
     }
 
-    public List<Pracownik> deserializeFromGzip(String fileName) {
+    public ArrayList<Pracownik> deserializeFromGzip(String fileName) {
         File file = new File("megafolder" + File.separator + fileName);
         if (!file.exists()) {
             System.err.println("File not found: " + file.getPath());
@@ -193,17 +222,7 @@ public class PracownikRepository implements Serializable {
         return deserializeFromSer(serFileName);
     }
 
-    private List<Pracownik> deserializeFromSer(String fileName) {
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(fileName))) {
-            return (List<Pracownik>) ois.readObject();
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
-            System.err.println("Error during deserialization: " + e.getMessage());
-            return new ArrayList<>();
-        } finally {
-            new File(fileName).delete();
-        }
-    }
+
 
     public List<Pracownik> deserialize(String fileName) {
         List<Pracownik> deserializedList = null;
