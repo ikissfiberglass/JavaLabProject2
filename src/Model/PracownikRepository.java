@@ -5,7 +5,11 @@ import View.ViewImpl;
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.zip.*;
 
 public class PracownikRepository implements Serializable {
@@ -15,6 +19,7 @@ public class PracownikRepository implements Serializable {
 
     public PracownikRepository() {
     }
+
 
     public List<Pracownik> getAllPracownicy() {
         return new ArrayList<>(pracownicy);
@@ -87,16 +92,17 @@ public class PracownikRepository implements Serializable {
         }
     }
 
-
     public void serializeToZip(String fileName) {
         if (!fileName.endsWith(".zip")) {
             fileName += ".zip";
         }
 
+
+
         File folder = new File("megafolder");
-        if (!folder.exists()) {
+        /*if (!folder.exists()) {
             folder.mkdirs();
-        }
+        }*/
 
         String serFileName = "megafolder" + File.separator + "pracownicy.ser";
         try {
@@ -155,7 +161,7 @@ public class PracownikRepository implements Serializable {
 
     private ArrayList<Pracownik> deserializeFromSer(String fileName) {
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(fileName))) {
-//            view.displayMessageNewLine("deserialisation completed");
+//            view.displayM essageNewLine("deserialisation completed");
             return (ArrayList<Pracownik>) ois.readObject();
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
@@ -245,6 +251,8 @@ public class PracownikRepository implements Serializable {
 
         return pracownicy;
     }
+
+
 
 }
 
